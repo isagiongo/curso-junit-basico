@@ -3,6 +3,8 @@ package negocio;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,7 @@ public class GerenciadoraClientesTest {
 		assertThat(cliente.getId(), is(idCliente1));
 		assertThat(cliente.getEmail(), is("isagiongo@gmail.com"));
 	}
-	
+
 	@Test
 	public void testPesquisaClienteInexistente() {
 
@@ -67,5 +69,61 @@ public class GerenciadoraClientesTest {
 
 		assertThat(clienteRemovido, is(false));
 		assertThat(gerClientes.getClientesDoBanco().size(), is(2));
+	}
+
+	@Test
+	public void testClienteIdadeValida() throws IdadeNaoPermitidaException {
+
+		Cliente cliente = new Cliente(4, "Manuela Torres", 33, "manuela@gmail.com", 3434, true);
+
+		boolean idadeValida = gerClientes.validaIdade(cliente.getIdade());
+
+		assertTrue(idadeValida);
+	}
+
+	@Test
+	public void testClienteIdadeValida_2() throws IdadeNaoPermitidaException {
+
+		Cliente cliente = new Cliente(4, "Manuela Torres", 18, "manuela@gmail.com", 3434, true);
+
+		boolean idadeValida = gerClientes.validaIdade(cliente.getIdade());
+
+		assertTrue(idadeValida);
+	}
+
+	@Test
+	public void testClienteIdadeValida_3() throws IdadeNaoPermitidaException {
+
+		Cliente cliente = new Cliente(4, "Manuela Torres", 65, "manuela@gmail.com", 3434, true);
+
+		boolean idadeValida = gerClientes.validaIdade(cliente.getIdade());
+
+		assertTrue(idadeValida);
+	}
+
+	@Test
+	public void testClienteIdadeInvalida() throws IdadeNaoPermitidaException {
+
+		Cliente cliente = new Cliente(4, "Manuela Torres", 17, "manuela@gmail.com", 3434, true);
+
+		try {
+			gerClientes.validaIdade(cliente.getIdade());
+			fail();
+		} catch (Exception e) {
+			assertThat(e.getMessage(), is(IdadeNaoPermitidaException.MSG_IDADE_INVALIDA));
+		}
+	}
+	
+	@Test
+	public void testClienteIdadeInvalida_2() throws IdadeNaoPermitidaException {
+
+		Cliente cliente = new Cliente(4, "Manuela Torres", 66, "manuela@gmail.com", 3434, true);
+
+		try {
+			gerClientes.validaIdade(cliente.getIdade());
+			fail();
+		} catch (Exception e) {
+			assertThat(e.getMessage(), is(IdadeNaoPermitidaException.MSG_IDADE_INVALIDA));
+		}
 	}
 }
